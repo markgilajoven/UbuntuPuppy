@@ -1,11 +1,12 @@
 SSH = 'ssh -A -i ~/.ssh/UbuntuPuppy2.pem -l ubuntu'
-REPO = "git@github.com:bitfield/cookbook.git"
+#REPO = "git@github.com:markgilajoven/UbuntuPuppy.git"
+REPO = "https://github.com/markgilajoven/UbuntuPuppy.git"
 
 desc "Run puppet on ENV['CLIENT']"
 task :apply do
-client = ENV['CLIENT']
-sh "git push"
-sh "#{SSH} #{client} pull-updates"
+  client = ENV['CLIENT']
+  sh "git push"
+  sh "#{SSH} #{client} pull-updates"
 end
 
 desc "Bootstrap Puppet on ENV['CLIENT'] with hostname ENV['HOSTNAME']"
@@ -14,10 +15,12 @@ task :bootstrap do
   hostname = ENV['HOSTNAME'] || client
   commands = <<BOOTSTRAP
 sudo hostname #{hostname} && \
-sudo su - c 'echo #{hostname} > /etc/hostname' && \
-wget http://apt.puppetlabs.com/puppetlabs-release-trusty.deb && \
-sudo dpkg -i puppetlabs-release-trusty.deb && \
-sudo apt-get update && sudo apt-get -y install git puppet && \
+sudo hostname > ~/tmp && \
+sudo tee /etc/hostname < ~/tmp && \ 
+wget http://apt.puppetlabs.com/puppetlabs-release-precise.deb && \
+sudo dpkg -i puppetlabs-release-precise.deb && \
+sudo apt-get update && \
+sudo apt-get -y install git puppet && \
 echo -e \"Host github.com\n\tStrictHostKeyChecking no\n\" >> ~/.ssh/config && \
 git clone #{REPO} puppet && \
 sudo puppet apply --modulepath=/home/ubuntu/puppet/modules /home/ubuntu/puppet/manifests/site.pp
@@ -27,7 +30,7 @@ end
 
 desc "Add syntax check hook to your git repo"
 task :add_check do
-here = File.dirname(__FILE__)
-sh "ln -s #{here}/hooks/check_syntax.sh #{here}/.git/hooks/pre-commit"
-puts "Puppet syntax check hook added"
+  here = File.dirname(__FILE__)
+  sh "ln -s #{here}/hooks/check_syntax.sh #{here}/.git/hooks/pre-commit"
+  puts "Puppet syntax check hook added"
 end
