@@ -1,4 +1,4 @@
-SSH = 'ssh -A -i ~/git/bitfield/bitfield.pem -l ubuntu'
+SSH = 'ssh -A -i ~/.ssh/UbuntuPuppy2.pem -l ubuntu'
 REPO = "git@github.com:bitfield/cookbook.git"
 
 desc "Run puppet on ENV['CLIENT']"
@@ -10,19 +10,19 @@ end
 
 desc "Bootstrap Puppet on ENV['CLIENT'] with hostname ENV['HOSTNAME']"
 task :bootstrap do
-client = ENV['CLIENT']
-hostname = ENV['HOSTNAME'] || client
-commands = <<BOOTSTRAP
+  client = ENV['CLIENT']
+  hostname = ENV['HOSTNAME'] || client
+  commands = <<BOOTSTRAP
 sudo hostname #{hostname} && \
-sudo echo #{hostname} >/etc/hostname && \
-wget http://apt.puppetlabs.com/puppetlabs-release-precise.deb && \
-sudo dpkg -i puppetlabs-release-precise.deb && \
+sudo su - c 'echo #{hostname} > /etc/hostname' && \
+wget http://apt.puppetlabs.com/puppetlabs-release-trusty.deb && \
+sudo dpkg -i puppetlabs-release-trusty.deb && \
 sudo apt-get update && sudo apt-get -y install git puppet && \
 echo -e \"Host github.com\n\tStrictHostKeyChecking no\n\" >> ~/.ssh/config && \
 git clone #{REPO} puppet && \
 sudo puppet apply --modulepath=/home/ubuntu/puppet/modules /home/ubuntu/puppet/manifests/site.pp
 BOOTSTRAP
-sh "#{SSH} #{client} '#{commands}'"
+  sh "#{SSH} #{client} '#{commands}'"
 end
 
 desc "Add syntax check hook to your git repo"
