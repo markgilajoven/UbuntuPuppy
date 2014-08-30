@@ -1,4 +1,4 @@
-SSH = 'ssh -A -i ~/.ssh/UbuntuPuppy2.pem -l ubuntu'
+SSH = 'ssh -A -i ~/.ssh/rexieldimo.pem -l ubuntu'
 #REPO = "git@github.com:markgilajoven/UbuntuPuppy.git"
 REPO = "https://github.com/markgilajoven/UbuntuPuppy.git"
 
